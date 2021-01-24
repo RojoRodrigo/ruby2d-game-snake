@@ -1,9 +1,11 @@
 require "ruby2d"
+require_relative "../model/state"
 
 module View
   class Ruby2dView
-    def initialize
+    def initialize(app)
       @pixel_sise = 50
+      @app = app
     end
 
     def start(state)
@@ -13,6 +15,9 @@ module View
         width: @pixel_sise * state.grid.cols,
         height: @pixel_sise * state.grid.rows
       )
+      on :key_down do |event|
+        handle_key_event(event)
+      end
       show
     end
 
@@ -37,7 +42,6 @@ module View
       )
     end
 
-    private
     def render_snake(state)
       @snake_positions.each(&:remove) if @snake_positions
       extend Ruby2D::DSL
@@ -51,6 +55,19 @@ module View
           size: @pixel_sise,
           color: 'green'
         )
+      end
+    end
+
+    def handle_key_event(event)
+      case event.key
+      when "up"
+        @app.send_action(:change_direction, Model::Direction::UP)
+      when "down"
+        @app.send_action(:change_direction, Model::Direction::DOWN)
+      when "left"
+        @app.send_action(:change_direction, Model::Direction::LEFT)
+      when "right"
+        @app.send_action(:change_direction, Model::Direction::RIGHT)
       end
     end
   end
